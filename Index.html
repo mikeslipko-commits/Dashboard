@@ -3,295 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RP Server - Media Management Dashboard</title>
-    <style>
-        :root {
-            --bg-dark: #121214;
-            --bg-card: #1a1a1e;
-            --accent: #7289da;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a5;
-            --danger: #ed4245;
-            --success: #3ba55d;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-bottom: 3px solid var(--accent);
-        }
-
-        .admin-badge {
-            background: rgba(114, 137, 218, 0.2);
-            border: 1px solid var(--accent);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        .login-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 900px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        h2 {
-            margin-bottom: 15px;
-            color: var(--accent);
-            border-bottom: 1px solid #2f3136;
-            padding-bottom: 8px;
-        }
-
-        .admin-only {
-            display: none; /* Standardmäßig für normale User unsichtbar */
-            background: rgba(59, 165, 93, 0.1);
-            border: 1px dashed var(--success);
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            background: #2f3136;
-            border: 1px solid #40444b;
-            color: white;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-
-        button.action-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-        }
-
-        ul {
-            list-style: none;
-        }
-
-        li {
-            padding: 10px;
-            background: #2f3136;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .delete-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .media-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .media-table th, .media-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #2f3136;
-        }
-
-        .media-table th {
-            background: #202225;
-        }
-    </style>
+    <title>Media & PR Management Dashboard</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <!-- Externe CSS einbinden -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <div>
-            <h1>Media & PR Dashboard</h1>
-            <p style="color: var(--text-muted)">Verwaltung für den RP Server</p>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo-area">
+            <i class="fa-solid fa-shapes"></i>
+            <h2>PR & Media Hub</h2>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <div class="admin-badge">Zuständiger Admin: <span id="current-admin">Noch nicht eingetragen</span></div>
-            <button class="login-btn" id="login-trigger" onclick="toggleLogin()">Als Mike Weshlove anmelden</button>
+        <nav>
+            <ul class="nav-list">
+                <li><div class="nav-item active" onclick="switchPage('medias', this)"><i class="fa-solid fa-users"></i> Medias Liste</div></li>
+                <li><div class="nav-item" onclick="switchPage('raenge', this)"><i class="fa-solid fa-layer-group"></i> Ränge & Rechte</div></li>
+                <li><div class="nav-item" onclick="switchPage('regeln', this)"><i class="fa-solid fa-book"></i> Regelwerk</div></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <p class="subtitle" style="font-size: 11px; text-align: center;">&copy; 2026 Media-Management System</p>
         </div>
-    </header>
-
-    <div class="grid-container">
-        
-        <!-- LINKS: MANAGEMENT & RECHTE -->
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            
-            <!-- Ränge & Freiheiten -->
-            <div class="card">
-                <h2>Media-Ränge & Freiheiten</h2>
-                <div class="admin-only" id="admin-rang-form">
-                    <h3>Rang hinzufügen</h3>
-                    <input type="text" id="rang-name" placeholder="z.B. Premium Media">
-                    <textarea id="rang-freiheiten" placeholder="Freiheiten (z.B. Kein Ticket-Cooldown, Eigener Skin)"></textarea>
-                    <button class="action-btn" onclick="addRang()">Rang speichern</button>
-                </div>
-                <ul id="rang-liste">
-                    <!-- Dynamischer Inhalt -->
-                </ul>
-            </div>
-
-            <!-- Server-Regeln für Medias -->
-            <div class="card">
-                <h2>Media-Regelwerk</h2>
-                <div class="admin-only" id="admin-regel-form">
-                    <h3>Regel hinzufügen</h3>
-                    <input type="text" id="regel-text" placeholder="Regel formulieren...">
-                    <button class="action-btn" onclick="addRegel()">Regel speichern</button>
-                </div>
-                <ul id="regel-liste">
-                    <!-- Dynamischer Inhalt -->
-                </ul>
-            </div>
-        </div>
-
-        <!-- RECHTS: MEDIA LISTE & ADMIN TRAGUNG -->
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            
-            <!-- Admin Einstellungen -->
-            <div class="card admin-only" id="admin-settings-card">
-                <h2>Admin-Einstellungen (Mike Only)</h2>
-                <label>Aktuellen Media-Admin ändern:</label>
-                <input type="text" id="new-admin-name" placeholder="Name des Admins eingeben...">
-                <button class="action-btn" onclick="updateAdminName()">Admin-Name aktualisieren</button>
-            </div>
-
-            <!-- Medias eintragen -->
-            <div class="card">
-                <h2>Eingetragene Medias</h2>
-                <div class="admin-only" id="admin-media-form">
-                    <h3>Neuen Media Creator eintragen</h3>
-                    <input type="text" id="media-name" placeholder="Streamer/Creator Name">
-                    <input type="text" id="media-platform" placeholder="Plattform (Twitch, YouTube, TikTok)">
-                    <input type="text" id="media-rang-select" placeholder="Zugeordneter Rang">
-                    <button class="action-btn" onclick="addMedia()">Creator eintragen</button>
-                </div>
-                
-                <table class="media-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Plattform</th>
-                            <th>Rang</th>
-                            <th class="admin-only-cell" style="display:none;">Aktion</th>
-                        </tr>
-                    </thead>
-                    <tbody id="media-liste">
-                        <!-- Dynamischer Inhalt -->
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-
     </div>
 
-    <script>
-        // Start-Passwort für Mike (kannst du im Code ändern)
-        const ADMIN_PASSWORD = "mike123"; 
-        let isAdmin = false;
+    <!-- MAIN APP CONTENT -->
+    <div class="main-wrapper">
+        <header>
+            <div>
+                <h1 id="page-title">Medias Übersicht</h1>
+                <p class="subtitle">Echtzeit-Verwaltung aller aktiven Content Creator & Streamer</p>
+            </div>
+            <div class="header-actions">
+                <div class="badge"><i class="fa-solid fa-user-shield"></i> PR-Leitung: <strong id="current-admin">Mike Weshlove</strong></div>
+                <button class="btn" id="login-btn" onclick="openLoginModal()"><i class="fa-solid fa-lock"></i> Als Mike anmelden</button>
+            </div>
+        </header>
 
-        // Daten-Arrays (werden später im LocalStorage gespeichert)
-        let data = {
-            adminName: "Mike Weshlove",
-            raenge: [
-                { name: "Test Media", freiheiten: "Streampflicht 2x die Woche, Support-Priorität Standard" }
-            ],
-            regeln: [
-                "Kein OOC-Talk im Stream.",
-                "Szenen dürfen nicht zum Meta-Gaming genutzt werden."
-            ],
-            medias: [
-                { name: "BeispielStreamer", plattform: "Twitch", rang: "Test Media" }
-            ]
-        };
+        <!-- STATS BANNER -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info"><h3>Gesamt Medias</h3><p id="stat-count-medias">0</p></div>
+                <div class="stat-icon"><i class="fa-solid fa-video"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info"><h3>Definierte Ränge</h3><p id="stat-count-raenge">0</p></div>
+                <div class="stat-icon"><i class="fa-solid fa-crown"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info"><h3>Regelungen</h3><p id="stat-count-regeln">0</p></div>
+                <div class="stat-icon"><i class="fa-solid fa-gavel"></i></div>
+            </div>
+        </div>
 
-        // Login Funktion für Mike Weshlove
-        function toggleLogin() {
-            if (!isAdmin) {
-                let pw = prompt("Bitte Admin-Passwort für Mike Weshlove eingeben:");
-                if (pw === ADMIN_PASSWORD) {
-                    isAdmin = true;
-                    document.getElementById('login-trigger').innerText = "Abmelden";
-                    document.getElementById('login-trigger').style.background = "var(--danger)";
-                    alert("Willkommen zurück, Mike Weshlove!");
-                    renderDashboard();
-                } else {
-                    alert("Falsches Passwort! Zugriff verweigert.");
-                }
-            } else {
-                isAdmin = false;
-                document.getElementById('login-trigger').innerText = "Als Mike Weshlove anmelden";
-                document.getElementById('login-trigger').style.background = "var(--accent)";
-                renderDashboard();
-            }
-        }
+        <!-- SEITE 1: MEDIAS -->
+        <div id="page-medias" class="dashboard-page active">
+            <div class="panel-grid two-cols">
+                <div class="card">
+                    <div class="card-header-area">
+                        <h2>Eingetragene Content Creator</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Plattform</th>
+                                    <th>Media Rang</th>
+                                    <th class="action-cell head-action">Aktion</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-medias"></tbody>
+                        </table>
+                    </div>
+                </div>
 
-        // Alles auf der Seite neu zeichnen
-        function renderDashboard() {
-            // Sichtbarkeit der Admin-Felder steuern
-            const adminFields = document.querySelectorAll('.admin-only');
-            adminFields.forEach(field => {
-                field.style.display = isAdmin ? 'block' : 'none';
-            });
+                <div>
+                    <div class="card admin-form-block" id="form-media-block">
+                        <h2><i class="fa-solid fa-plus-circle"></i> Creator hinzufügen</h2>
+                        <div style="margin-top: 15px;">
+                            <div class="form-group">
+                                <label>Name des Creators</label>
+                                <input type="text" id="input-media-name" placeholder="z.B. MontanaBlack">
+                            </div>
+                            <div class="form-group">
+                                <label>Streaming Plattform</label>
+                                <select id="input-media-platform">
+                                    <option value="Twitch">Twitch</option>
+                                    <option value="YouTube">YouTube</option>
+                                    <option value="TikTok">TikTok</option>
+                                    <option value="Andere">Andere Plattform</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Zugeordneter Rang</label>
+                                <select id="input-media-rang"></select>
+                            </div>
+                            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="submitMedia()">Hinzufügen</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card admin-form-block" id="form-admin-change-block">
+                        <h2><i class="fa-solid fa-user-gear"></i> PR-Leitung ändern</h2>
+                        <div style="margin-top: 15px;" class="form-group">
+                            <label>Name des neuen Admins</label>
+                            <input type="text" id="input-admin-name" placeholder="Name eingeben...">
+                            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="submitAdminName()">Übernehmen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            const adminCells = document.querySelectorAll('.admin-only-cell');
-            adminCells.forEach(cell => {
-                cell.style.display = isAdmin ? 'table-cell' : 'none';
-            });
+        <!-- SEITE 2: RÄNGE -->
+        <div id="page-raenge" class="dashboard-page">
+            <div class="card">
+                <div class="card-header-area">
+                    <h2>Ränge-Konfiguration & Serverprivilegien</h2>
+                </div>
+                
+                <div class="admin-form-block" id="form-rang-block">
+                    <h3><i class="fa-solid fa-plus-circle"></i> Neuen Rang definieren</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 16px; margin-top: 15px; align-items: flex-end;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Rang Bezeichnung</label>
+                            <input type="text" id="input-rang-name" placeholder="z.B. Premium Partner">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Spezifische Freiheiten & Privilegien</label>
+                            <input type="text" id="input-rang-features" placeholder="z.B. Eigene Fahrzeug-Skins, Keine Einreisegebühr">
+                        </div>
+                        <button class="btn" onclick="submitRang()">Speichern</button>
+                    </div>
+                </div>
 
-            // Admin Name anzeigen
+                <ul class="interactive-list" id="list-raenge"></ul>
+            </div>
+        </div>
+
+        <!-- SEITE 3: REGELN -->
+        <div id="page-regeln" class="dashboard-page">
+            <div class="card">
+                <div class="card-header-area">
+                    <h2>Richtlinien für Aufnahmen & Streams</h2>
+                </div>
+
+                <div class="admin-form-block" id="form-regel-block">
+                    <h3><i class="fa-solid fa-plus-circle"></i> Neue Regel hinzufügen</h3>
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 16px; margin-top: 15px; align-items: flex-end;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Regel Text</label>
+                            <input type="text" id="input-regel-text" placeholder="Regel präzise formulieren...">
+                        </div>
+                        <button class="btn" onclick="submitRegel()">Hinzufügen</button>
+                    </div>
+                </div>
+
+                <ul class="interactive-list" id="list-regeln"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+            <h3>Admin Verifizierung</h3>
+            <p class="subtitle" style="margin-bottom: 20px;">Dieser Bereich ist geschützt. Authentifizierung für Mike Weshlove erforderlich.</p>
+            <div class="form-group">
+                <label>Admin Passwort</label>
+                <input type="password" id="admin-password-input" placeholder="••••••••">
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="verifyAdminLogin()">Identität bestätigen</button>
+        </div>
+    </div>
+
+    <!-- Externe JS einbinden -->
+    <script src="app.js"></script>
+</body>
+</html>
