@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RP Server - Media Management Dashboard</title>
+    <style>
+        :root {
+            --bg-dark: #121214;
+            --bg-card: #1a1a1e;
+            --accent: #7289da;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a5;
+            --danger: #ed4245;
+            --success: #3ba55d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .admin-badge {
+            background: rgba(114, 137, 218, 0.2);
+            border: 1px solid var(--accent);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .login-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: var(--accent);
+            border-bottom: 1px solid #2f3136;
+            padding-bottom: 8px;
+        }
+
+        .admin-only {
+            display: none; /* Standardmäßig für normale User unsichtbar */
+            background: rgba(59, 165, 93, 0.1);
+            border: 1px dashed var(--success);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background: #2f3136;
+            border: 1px solid #40444b;
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        button.action-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            padding: 10px;
+            background: #2f3136;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .media-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .media-table th, .media-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #2f3136;
+        }
+
+        .media-table th {
+            background: #202225;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>Media & PR Dashboard</h1>
+            <p style="color: var(--text-muted)">Verwaltung für den RP Server</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="admin-badge">Zuständiger Admin: <span id="current-admin">Noch nicht eingetragen</span></div>
+            <button class="login-btn" id="login-trigger" onclick="toggleLogin()">Als Mike Weshlove anmelden</button>
+        </div>
+    </header>
+
+    <div class="grid-container">
+        
+        <!-- LINKS: MANAGEMENT & RECHTE -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Ränge & Freiheiten -->
+            <div class="card">
+                <h2>Media-Ränge & Freiheiten</h2>
+                <div class="admin-only" id="admin-rang-form">
+                    <h3>Rang hinzufügen</h3>
+                    <input type="text" id="rang-name" placeholder="z.B. Premium Media">
+                    <textarea id="rang-freiheiten" placeholder="Freiheiten (z.B. Kein Ticket-Cooldown, Eigener Skin)"></textarea>
+                    <button class="action-btn" onclick="addRang()">Rang speichern</button>
+                </div>
+                <ul id="rang-liste">
+                    <!-- Dynamischer Inhalt -->
+                </ul>
+            </div>
+
+            <!-- Server-Regeln für Medias -->
+            <div class="card">
+                <h2>Media-Regelwerk</h2>
+                <div class="admin-only" id="admin-regel-form">
+                    <h3>Regel hinzufügen</h3>
+                    <input type="text" id="regel-text" placeholder="Regel formulieren...">
+                    <button class="action-btn" onclick="addRegel()">Regel speichern</button>
+                </div>
+                <ul id="regel-liste">
+                    <!-- Dynamischer Inhalt -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- RECHTS: MEDIA LISTE & ADMIN TRAGUNG -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- Admin Einstellungen -->
+            <div class="card admin-only" id="admin-settings-card">
+                <h2>Admin-Einstellungen (Mike Only)</h2>
+                <label>Aktuellen Media-Admin ändern:</label>
+                <input type="text" id="new-admin-name" placeholder="Name des Admins eingeben...">
+                <button class="action-btn" onclick="updateAdminName()">Admin-Name aktualisieren</button>
+            </div>
+
+            <!-- Medias eintragen -->
+            <div class="card">
+                <h2>Eingetragene Medias</h2>
+                <div class="admin-only" id="admin-media-form">
+                    <h3>Neuen Media Creator eintragen</h3>
+                    <input type="text" id="media-name" placeholder="Streamer/Creator Name">
+                    <input type="text" id="media-platform" placeholder="Plattform (Twitch, YouTube, TikTok)">
+                    <input type="text" id="media-rang-select" placeholder="Zugeordneter Rang">
+                    <button class="action-btn" onclick="addMedia()">Creator eintragen</button>
+                </div>
+                
+                <table class="media-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Plattform</th>
+                            <th>Rang</th>
+                            <th class="admin-only-cell" style="display:none;">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="media-liste">
+                        <!-- Dynamischer Inhalt -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Start-Passwort für Mike (kannst du im Code ändern)
+        const ADMIN_PASSWORD = "mike123"; 
+        let isAdmin = false;
+
+        // Daten-Arrays (werden später im LocalStorage gespeichert)
+        let data = {
+            adminName: "Mike Weshlove",
+            raenge: [
+                { name: "Test Media", freiheiten: "Streampflicht 2x die Woche, Support-Priorität Standard" }
+            ],
+            regeln: [
+                "Kein OOC-Talk im Stream.",
+                "Szenen dürfen nicht zum Meta-Gaming genutzt werden."
+            ],
+            medias: [
+                { name: "BeispielStreamer", plattform: "Twitch", rang: "Test Media" }
+            ]
+        };
+
+        // Login Funktion für Mike Weshlove
+        function toggleLogin() {
+            if (!isAdmin) {
+                let pw = prompt("Bitte Admin-Passwort für Mike Weshlove eingeben:");
+                if (pw === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    document.getElementById('login-trigger').innerText = "Abmelden";
+                    document.getElementById('login-trigger').style.background = "var(--danger)";
+                    alert("Willkommen zurück, Mike Weshlove!");
+                    renderDashboard();
+                } else {
+                    alert("Falsches Passwort! Zugriff verweigert.");
+                }
+            } else {
+                isAdmin = false;
+                document.getElementById('login-trigger').innerText = "Als Mike Weshlove anmelden";
+                document.getElementById('login-trigger').style.background = "var(--accent)";
+                renderDashboard();
+            }
+        }
+
+        // Alles auf der Seite neu zeichnen
+        function renderDashboard() {
+            // Sichtbarkeit der Admin-Felder steuern
+            const adminFields = document.querySelectorAll('.admin-only');
+            adminFields.forEach(field => {
+                field.style.display = isAdmin ? 'block' : 'none';
+            });
+
+            const adminCells = document.querySelectorAll('.admin-only-cell');
+            adminCells.forEach(cell => {
+                cell.style.display = isAdmin ? 'table-cell' : 'none';
+            });
+
+            // Admin Name anzeigen
