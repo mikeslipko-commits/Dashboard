@@ -1,13 +1,13 @@
 const SECURE_PASSWORD = "mike123"; // Mikes Admin Passwort
 let isAdminActive = false;
 
-// Standard-Fallback-Datenstruktur
+// Standard-Datenstruktur mit Media Rang 1, 2 und 3
 let appData = {
     adminName: "Mike Weshlove",
     raenge: [
-        { name: "Management", features: "Volle Rechte, administrative Weisungsbefugnis" },
-        { name: "Partner Media", features: "Priorisierter Support, eigene Auto-Skins, Sponsoring-Pakete" },
-        { name: "Underground Creator", features: "Keine Warteschlange beim Joinen, Streamer-Rolle auf Discord" }
+        { name: "Media Rang 1", features: "Standard-Media Rechte, Ticket-Support Priorität" },
+        { name: "Media Rang 2", features: "Erweiterte Rechte, Keine Warteschlange beim Joinen, Discord-Rolle" },
+        { name: "Media Rang 3", features: "Volle Media-Freiheiten, eigene Fahrzeug-Skins, administrative Unterstützung" }
     ],
     regeln: [
         "Backseat-Gaming und Meta-Gaming durch den Chat müssen aktiv unterbunden werden.",
@@ -15,12 +15,12 @@ let appData = {
         "Server-Fehler (Bugs) dürfen im Stream nicht vorgeführt werden – direkte Meldung ans Management."
     ],
     medias: [
-        { name: "Mike Weshlove", platform: "Twitch", rang: "Management" },
-        { name: "GamerBro", platform: "YouTube", rang: "Partner Media" }
+        { name: "Mike Weshlove", platform: "Twitch", rang: "Media Rang 3", link: "https://twitch.tv" },
+        { name: "GamerBro", platform: "YouTube", rang: "Media Rang 1", link: "https://youtube.com" }
     ]
 };
 
-// LocalStorage Initialisierung
+// LocalStorage Initialisierung (Lädt gespeicherte Daten aus dem Browser)
 if (localStorage.getItem('mediaHubData')) {
     appData = JSON.parse(localStorage.getItem('mediaHubData'));
 } else {
@@ -43,7 +43,7 @@ function switchPage(pageId, element) {
     document.getElementById('page-title').innerText = titles[pageId];
 }
 
-// Login Modal Steuerung
+// Login Modal Steuerung für Mike Weshlove
 function openLoginModal() {
     if (isAdminActive) {
         isAdminActive = false;
@@ -73,29 +73,34 @@ function verifyAdminLogin() {
         alert("Ungültiges Passwort! Zugriff verweigert.");
     }
 }
-
-// Dashboard Rendering-Engine
+// Dashboard Rendering-Engine (Zeichnet alle Tabellen und Listen live)
 function renderDashboard() {
-    // Admin Formular-Einblendungen
+    // Admin Formular-Einblendungen steuern
     document.querySelectorAll('.admin-form-block').forEach(block => {
         if (isAdminActive) block.classList.add('visible');
         else block.classList.remove('visible');
     });
 
-    // Statistiken & Admin-Namen aktualisieren
+    // Statistiken & Admin-Namen im Interface aktualisieren
     document.getElementById('stat-count-medias').innerText = appData.medias.length;
     document.getElementById('stat-count-raenge').innerText = appData.raenge.length;
     document.getElementById('stat-count-regeln').innerText = appData.regeln.length;
     document.getElementById('current-admin').innerText = appData.adminName;
 
-    // 1. Tabelle: Medias zeichnen
+    // 1. Tabelle: Medias zeichnen (Inklusive klickbarem Kanallink)
     const tableBody = document.getElementById('table-body-medias');
     tableBody.innerHTML = "";
     appData.medias.forEach((m, idx) => {
         const platformClass = m.platform.toLowerCase();
+        
+        // Macht den Namen klickbar, falls Mike einen Link hinterlegt hat
+        const nameDisplay = m.link 
+            ? `<a href="${m.link}" target="_blank" style="color: inherit; text-decoration: none; border-bottom: 1px dashed var(--accent);"><strong>${m.name}</strong> <i class="fa-solid fa-external-link" style="font-size: 10px; color: var(--text-muted);"></i></a>` 
+            : `<strong>${m.name}</strong>`;
+
         tableBody.innerHTML += `
             <tr>
-                <td><strong>${m.name}</strong></td>
+                <td>${nameDisplay}</td>
                 <td><span class="platform-tag ${platformClass}">${m.platform}</span></td>
                 <td>${m.rang}</td>
                 <td class="action-cell ${isAdminActive ? 'visible' : ''}">
@@ -105,7 +110,7 @@ function renderDashboard() {
         `;
     });
 
-    // Dropdown-Liste für Ränge im Media-Formular neu aufbauen
+    // Dynamisches Dropdown-Menü im Creator-Formular anpassen basierend auf den Rängen
     const rangSelect = document.getElementById('input-media-rang');
     rangSelect.innerHTML = "";
     appData.raenge.forEach(r => {
@@ -148,13 +153,17 @@ function renderDashboard() {
 // SPEICHER-OPERATIONEN (ADMIN ONLY)
 function submitMedia() {
     const name = document.getElementById('input-media-name').value.trim();
+    const link = document.getElementById('input-media-link').value.trim();
     const platform = document.getElementById('input-media-platform').value;
     const rang = document.getElementById('input-media-rang').value;
 
     if (!name) return alert("Bitte trag einen Namen ein.");
-    appData.medias.push({ name, platform, rang });
+    
+    appData.medias.push({ name, link, platform, rang });
     executeDataUpdate();
+    
     document.getElementById('input-media-name').value = "";
+    document.getElementById('input-media-link').value = "";
 }
 
 function submitRang() {
@@ -196,5 +205,5 @@ function executeDataUpdate() {
     renderDashboard();
 }
 
-// App initial starten
+// App initial beim Laden der Website starten
 renderDashboard();
