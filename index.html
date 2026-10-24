@@ -92,6 +92,10 @@
                                 <input type="text" id="input-media-name" placeholder="z.B. MontanaBlack">
                             </div>
                             <div class="form-group">
+                                <label>Kanal / Stream Link</label>
+                                <input type="url" id="input-media-link" placeholder="z.B. https://twitch.tv">
+                            </div>
+                            <div class="form-group">
                                 <label>Streaming Plattform</label>
                                 <select id="input-media-platform">
                                     <option value="Twitch">Twitch</option>
@@ -102,7 +106,11 @@
                             </div>
                             <div class="form-group">
                                 <label>Zugeordneter Rang</label>
-                                <select id="input-media-rang"></select>
+                                <select id="input-media-rang">
+                                    <option value="Media Rang 1">Media Rang 1</option>
+                                    <option value="Media Rang 2">Media Rang 2</option>
+                                    <option value="Media Rang 3">Media Rang 3</option>
+                                </select>
                             </div>
                             <button class="btn" style="width: 100%; margin-top: 10px;" onclick="submitMedia()">Hinzufügen</button>
                         </div>
@@ -132,7 +140,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 16px; margin-top: 15px; align-items: flex-end;">
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Rang Bezeichnung</label>
-                            <input type="text" id="input-rang-name" placeholder="z.B. Premium Partner">
+                            <input type="text" id="input-rang-name" placeholder="z.B. Media Rang 4">
                         </div>
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Spezifische Freiheiten & Privilegien</label>
